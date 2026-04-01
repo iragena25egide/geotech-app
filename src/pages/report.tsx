@@ -1,57 +1,76 @@
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { api } from '../../services/api';
-import Sidebar from './sidebar';
-import Header from './header';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Layout,
+  Menu,
+  Table,
+  Button,
+  Card,
+  Space,
+  message,
+  Typography,
+} from 'antd';
+import {
+  ArrowLeftOutlined,
+  DownloadOutlined,
+  DashboardOutlined,
+  ExperimentOutlined,
+  FileTextOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons';
+import { api } from '../services/api';
+import { SoilSample } from '../types';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-interface SoilSample {
-  id: number;
-  moisture: number;
-  organicMatter: number;
-  pH: number;
-  nitrogen: number;
-  phosphorus: number;
-  potassium: number;
-  texture: string;
-  classification: string;
-}
+const { Header, Sider, Content } = Layout;
+const { Title } = Typography;
 
 export default function Report() {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const [samples, setSamples] = useState<SoilSample[]>([]);
-  const [project, setProject] = useState<{ name: string } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [projectName, setProjectName] = useState('');
 
   useEffect(() => {
+    if (!projectId) navigate('/');
     loadData();
-  }, []);
+  }, [projectId]);
 
-  async function loadData() {
+  const loadData = async () => {
+    setLoading(true);
     try {
       const [samplesRes, projectRes] = await Promise.all([
         api.get(`/soils?projectId=${projectId}`),
         api.get(`/projects/${projectId}`),
       ]);
       setSamples(samplesRes.data);
-      setProject(projectRes.data);
+      setProjectName(projectRes.data.name);
     } catch (err) {
-      console.error(err);
+      message.error('Failed to load report data');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const generatePDF = () => {
     const doc = new jsPDF();
-    doc.text(`Soil Analysis Report - ${project?.name}`, 14, 20);
+    doc.setFontSize(18);
+    doc.text(`Soil Analysis Report - ${projectName}`, 14, 20);
+    doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
 
     const tableColumn = [
-      'Moisture',
-      'Organic Matter',
+      'Moisture (%)',
+      'Org. Matter (%)',
       'pH',
       'N (mg/kg)',
       'P (mg/kg)',
       'K (mg/kg)',
+      'Sand (%)',
+      'Silt (%)',
+      'Clay (%)',
       'Texture',
       'Classification',
     ];
@@ -62,6 +81,9 @@ export default function Report() {
       s.nitrogen,
       s.phosphorus,
       s.potassium,
+      s.sand,
+      s.silt,
+      s.clay,
       s.texture,
       s.classification,
     ]);
@@ -72,62 +94,88 @@ export default function Report() {
       body: tableRows,
       theme: 'striped',
       headStyles: { fillColor: [41, 128, 185] },
+      styles: { fontSize: 8 },
+      columnStyles: { 0: { cellWidth: 20 } },
     });
 
     doc.save(`report_${projectId}.pdf`);
   };
 
+  const columns = [
+    { title: 'Moisture (%)', dataIndex: 'moisture', key: 'moisture' },
+    { title: 'Org. Matter (%)', dataIndex: 'organicMatter', key: 'organicMatter' },
+    { title: 'pH', dataIndex: 'pH', key: 'pH' },
+    { title: 'N (mg/kg)', dataIndex: 'nitrogen', key: 'nitrogen' },
+    { title: 'P (mg/kg)', dataIndex: 'phosphorus', key: 'phosphorus' },
+    { title: 'K (mg/kg)', dataIndex: 'potassium', key: 'potassium' },
+    { title: 'Sand (%)', dataIndex: 'sand', key: 'sand' },
+    { title: 'Silt (%)', dataIndex: 'silt', key: 'silt' },
+    { title: 'Clay (%)', dataIndex: 'clay', key: 'clay' },
+    { title: 'Texture', dataIndex: 'texture', key: 'texture' },
+    { title: 'Classification', dataIndex: 'classification', key: 'classification' },
+  ];
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Report for {project?.name}</h1>
-            <button
-              onClick={generatePDF}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider theme="dark">
+        <div className="logo" style={{ padding: 16, color: 'white', fontSize: 18, fontWeight: 'bold' }}>
+          GeoTech
+        </div>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['3']}>
+          <Menu.Item key="1" icon={<DashboardOutlined />} onClick={() => navigate('/')}>
+            Dashboard
+          </Menu.Item>
+          <Menu.Item key="2" icon={<ExperimentOutlined />} onClick={() => navigate(`/analysis/${projectId}`)}>
+            Soil Analysis
+          </Menu.Item>
+          <Menu.Item key="3" icon={<FileTextOutlined />}>Report</Menu.Item>
+          <Menu.Item key="4" icon={<LogoutOutlined />} onClick={logout}>Logout</Menu.Item>
+        </Menu>
+      </Sider>
+      <Layout>
+        <Header style={{ background: '#fff', padding: '0 24px' }}>
+          <Space>
+            <Button
+              icon={<ArrowLeftOutlined />}
+              onClick={() => navigate('/')}
             >
-              Download PDF Report
-            </button>
-          </div>
-          {samples.length === 0 ? (
-            <p>No soil samples found. Please add some first.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border rounded shadow">
-                <thead className="bg-gray-200">
-                  <tr>
-                    <th className="px-4 py-2 border">Moisture</th>
-                    <th className="px-4 py-2 border">Org. Matter</th>
-                    <th className="px-4 py-2 border">pH</th>
-                    <th className="px-4 py-2 border">N (mg/kg)</th>
-                    <th className="px-4 py-2 border">P (mg/kg)</th>
-                    <th className="px-4 py-2 border">K (mg/kg)</th>
-                    <th className="px-4 py-2 border">Texture</th>
-                    <th className="px-4 py-2 border">Classification</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {samples.map((sample) => (
-                    <tr key={sample.id}>
-                      <td className="px-4 py-2 border">{sample.moisture}</td>
-                      <td className="px-4 py-2 border">{sample.organicMatter}</td>
-                      <td className="px-4 py-2 border">{sample.pH}</td>
-                      <td className="px-4 py-2 border">{sample.nitrogen}</td>
-                      <td className="px-4 py-2 border">{sample.phosphorus}</td>
-                      <td className="px-4 py-2 border">{sample.potassium}</td>
-                      <td className="px-4 py-2 border">{sample.texture}</td>
-                      <td className="px-4 py-2 border">{sample.classification}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </main>
-      </div>
-    </div>
+              Back to Dashboard
+            </Button>
+            <Title level={4} style={{ margin: 0 }}>Report - {projectName}</Title>
+          </Space>
+        </Header>
+        <Content style={{ margin: '24px' }}>
+          <Card
+            title="Soil Samples"
+            extra={
+              samples.length > 0 && (
+                <Button type="primary" icon={<DownloadOutlined />} onClick={generatePDF}>
+                  Download PDF
+                </Button>
+              )
+            }
+          >
+            <Table
+              columns={columns}
+              dataSource={samples}
+              rowKey="id"
+              loading={loading}
+              scroll={{ x: true }}
+              pagination={{ pageSize: 10 }}
+            />
+            {samples.length === 0 && !loading && (
+              <div style={{ textAlign: 'center', padding: 40 }}>
+                No soil samples found. Please add a sample from the Soil Analysis page.
+              </div>
+            )}
+          </Card>
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
