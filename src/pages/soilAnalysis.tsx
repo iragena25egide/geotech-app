@@ -1,10 +1,31 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { api } from '../../services/api';
-import Sidebar from './sidebar';
-import Header from './header';
+import {
+  Layout,
+  Menu,
+  Form,
+  InputNumber,
+  Button,
+  Card,
+  Alert,
+  Space,
+  message,
+  Spin,
+} from 'antd';
+import {
+  ArrowLeftOutlined,
+  SaveOutlined,
+  ExperimentOutlined,
+  DashboardOutlined,
+  FileTextOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons';
+import { api } from '../services/api';
+import { SoilSample } from '../types';
 
-// Simple classification based on sand/silt/clay percentages
+const { Header, Sider, Content } = Layout;
+
+// Simple USDA classification based on sand, silt, clay percentages
 function classifySoil(sand: number, silt: number, clay: number): string {
   if (sand > 70) return 'Sandy';
   if (clay > 40) return 'Clayey';
@@ -15,206 +36,152 @@ function classifySoil(sand: number, silt: number, clay: number): string {
 export default function SoilAnalysis() {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    moisture: '',
-    organicMatter: '',
-    pH: '',
-    nitrogen: '',
-    phosphorus: '',
-    potassium: '',
-    sand: '',
-    silt: '',
-    clay: '',
-  });
+  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [classification, setClassification] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [classification, setClassification] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    if (!projectId) navigate('/');
+  }, [projectId, navigate]);
 
-  const handleClassify = () => {
-    const sand = parseFloat(form.sand);
-    const silt = parseFloat(form.silt);
-    const clay = parseFloat(form.clay);
-    if (isNaN(sand) || isNaN(silt) || isNaN(clay)) {
-      alert('Please enter sand, silt, and clay percentages');
-      return;
+  // Watch sand, silt, clay fields for real-time classification
+  const handleValuesChange = (_: any, allValues: any) => {
+    const { sand, silt, clay } = allValues;
+    if (sand !== undefined && silt !== undefined && clay !== undefined) {
+      const result = classifySoil(Number(sand), Number(silt), Number(clay));
+      setClassification(result);
+    } else {
+      setClassification(null);
     }
-    const result = classifySoil(sand, silt, clay);
-    setClassification(result);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const onFinish = async (values: any) => {
+    setSaving(true);
+    const payload: SoilSample = {
+      projectId: Number(projectId),
+      moisture: values.moisture,
+      organicMatter: values.organicMatter,
+      pH: values.pH,
+      nitrogen: values.nitrogen,
+      phosphorus: values.phosphorus,
+      potassium: values.potassium,
+      sand: values.sand,
+      silt: values.silt,
+      clay: values.clay,
+      texture: classification || 'Unknown',
+      classification: classification || 'Unknown',
+    };
     try {
-      const payload = {
-        projectId: Number(projectId),
-        moisture: parseFloat(form.moisture),
-        organicMatter: parseFloat(form.organicMatter),
-        pH: parseFloat(form.pH),
-        nitrogen: parseFloat(form.nitrogen),
-        phosphorus: parseFloat(form.phosphorus),
-        potassium: parseFloat(form.potassium),
-        texture: classification,
-        classification,
-      };
       await api.post('/soils', payload);
-      alert('Soil sample saved!');
+      message.success('Soil sample saved successfully');
       navigate(`/report/${projectId}`);
     } catch (err) {
-      console.error(err);
-      alert('Error saving sample');
+      message.error('Failed to save sample');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          <h1 className="text-2xl font-bold mb-4">Soil Analysis - Project {projectId}</h1>
-          <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md space-y-4 max-w-2xl">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-700">Moisture (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="moisture"
-                  value={form.moisture}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider theme="dark">
+        <div className="logo" style={{ padding: 16, color: 'white', fontSize: 18, fontWeight: 'bold' }}>
+          GeoTech
+        </div>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['2']}>
+          <Menu.Item key="1" icon={<DashboardOutlined />} onClick={() => navigate('/')}>
+            Dashboard
+          </Menu.Item>
+          <Menu.Item key="2" icon={<ExperimentOutlined />}>Soil Analysis</Menu.Item>
+          <Menu.Item key="3" icon={<FileTextOutlined />} onClick={() => navigate(`/report/${projectId}`)}>
+            Report
+          </Menu.Item>
+          <Menu.Item key="4" icon={<LogoutOutlined />} onClick={logout}>Logout</Menu.Item>
+        </Menu>
+      </Sider>
+      <Layout>
+        <Header style={{ background: '#fff', padding: '0 24px' }}>
+          <Space>
+            <Button
+              icon={<ArrowLeftOutlined />}
+              onClick={() => navigate('/')}
+            >
+              Back to Dashboard
+            </Button>
+            <h2 style={{ margin: 0 }}>Soil Analysis - Project {projectId}</h2>
+          </Space>
+        </Header>
+        <Content style={{ margin: '24px' }}>
+          <Card title="Enter Soil Parameters">
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={onFinish}
+              onValuesChange={handleValuesChange}
+              initialValues={{
+                moisture: undefined,
+                organicMatter: undefined,
+                pH: undefined,
+                nitrogen: undefined,
+                phosphorus: undefined,
+                potassium: undefined,
+                sand: undefined,
+                silt: undefined,
+                clay: undefined,
+              }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+                <Form.Item name="moisture" label="Moisture (%)" rules={[{ required: true }]}>
+                  <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="organicMatter" label="Organic Matter (%)" rules={[{ required: true }]}>
+                  <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="pH" label="pH" rules={[{ required: true }]}>
+                  <InputNumber min={0} max={14} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="nitrogen" label="Nitrogen (mg/kg)" rules={[{ required: true }]}>
+                  <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="phosphorus" label="Phosphorus (mg/kg)" rules={[{ required: true }]}>
+                  <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="potassium" label="Potassium (mg/kg)" rules={[{ required: true }]}>
+                  <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="sand" label="Sand (%)" rules={[{ required: true }]}>
+                  <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="silt" label="Silt (%)" rules={[{ required: true }]}>
+                  <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item name="clay" label="Clay (%)" rules={[{ required: true }]}>
+                  <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+                </Form.Item>
               </div>
-              <div>
-                <label className="block text-gray-700">Organic Matter (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="organicMatter"
-                  value={form.organicMatter}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">pH</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="pH"
-                  value={form.pH}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Nitrogen (mg/kg)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="nitrogen"
-                  value={form.nitrogen}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Phosphorus (mg/kg)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="phosphorus"
-                  value={form.phosphorus}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Potassium (mg/kg)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="potassium"
-                  value={form.potassium}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Sand (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="sand"
-                  value={form.sand}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Silt (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="silt"
-                  value={form.silt}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700">Clay (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  name="clay"
-                  value={form.clay}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  required
-                />
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <button
-                type="button"
-                onClick={handleClassify}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-              >
-                Classify Texture
-              </button>
               {classification && (
-                <div className="bg-green-100 text-green-800 px-4 py-2 rounded">
-                  Classification: {classification}
-                </div>
+                <Alert
+                  message={`Soil Classification: ${classification}`}
+                  type="info"
+                  showIcon
+                  style={{ marginBottom: 24 }}
+                />
               )}
-            </div>
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={loading}
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
-              >
-                {loading ? 'Saving...' : 'Save Sample'}
-              </button>
-            </div>
-          </form>
-        </main>
-      </div>
-    </div>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={saving} icon={<SaveOutlined />}>
+                  Save Sample & Generate Report
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
