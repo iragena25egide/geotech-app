@@ -33,10 +33,9 @@ export default function Login({ onLogin }: Props) {
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">GeoTech</h2>
         <Form
           name="login"
-          initialValues={{ remember: true }}
           onFinish={onFinish}
-          autoComplete="off"
           layout="vertical"
+          autoComplete="off"
         >
           <Form.Item
             label="Email"
