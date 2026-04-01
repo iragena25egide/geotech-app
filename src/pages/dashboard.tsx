@@ -1,60 +1,71 @@
+import { Layout, Menu, Card, Button, Table, Space } from 'antd';
+import { DashboardOutlined, ExperimentOutlined, FileTextOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api';
-import { Link } from 'react-router-dom';
-import Sidebar from './sidebar';
-import Header from './header';
+import { useNavigate } from 'react-router-dom';
 
-
- interface Project {
-  id: number;
-  name: string;
-  description?: string;
-}
-
+const { Header, Sider, Content } = Layout;
 
 export default function Dashboard() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadProjects();
   }, []);
 
-  async function loadProjects() {
+  const loadProjects = async () => {
     const res = await api.get('/projects');
     setProjects(res.data);
-  }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const columns = [
+    { title: 'Project Name', dataIndex: 'name', key: 'name' },
+    { title: 'Description', dataIndex: 'description', key: 'description' },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: any) => (
+        <Space>
+          <Button type="link" onClick={() => navigate(`/analysis/${record.id}`)}>
+            Add Sample
+          </Button>
+          <Button type="link" onClick={() => navigate(`/report/${record.id}`)}>
+            View Report
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">
-          <h1 className="text-2xl font-bold mb-4">My Projects</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map((project) => (
-              <div key={project.id} className="bg-white p-4 rounded shadow">
-                <h3 className="text-lg font-semibold">{project.name}</h3>
-                <p className="text-gray-600">{project.description}</p>
-                <div className="mt-4 flex space-x-2">
-                  <Link
-                    to={`/analysis/${project.id}`}
-                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
-                  >
-                    Add Sample
-                  </Link>
-                  <Link
-                    to={`/report/${project.id}`}
-                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
-                  >
-                    View Report
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </main>
-      </div>
-    </div>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider theme="dark">
+        <div className="logo" style={{ padding: '16px', color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
+          GeoTech
+        </div>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+          <Menu.Item key="1" icon={<DashboardOutlined />}>Dashboard</Menu.Item>
+          <Menu.Item key="2" icon={<ExperimentOutlined />}>Soil Analysis</Menu.Item>
+          <Menu.Item key="3" icon={<FileTextOutlined />}>Reports</Menu.Item>
+          <Menu.Item key="4" icon={<LogoutOutlined />} onClick={logout}>Logout</Menu.Item>
+        </Menu>
+      </Sider>
+      <Layout>
+        <Header style={{ background: '#fff', padding: '0 24px' }}>
+          <h2>Welcome to GeoTech</h2>
+        </Header>
+        <Content style={{ margin: '24px' }}>
+          <Card title="My Projects" extra={<Button type="primary">New Project</Button>}>
+            <Table columns={columns} dataSource={projects} rowKey="id" />
+          </Card>
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
