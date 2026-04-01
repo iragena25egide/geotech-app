@@ -1,12 +1,8 @@
-export interface User {
-  id: number;
-  email: string;
-}
-
 export interface Project {
   id: number;
   name: string;
   description?: string;
+  createdAt?: string;
 }
 
 export interface SoilSample {
@@ -18,13 +14,10 @@ export interface SoilSample {
   nitrogen: number;
   phosphorus: number;
   potassium: number;
-  texture?: string; // e.g., "sandy", "clay", "loam"
-  classification?: string; // USDA classification
-}
-
-export interface Report {
-  id: number;
-  projectId: number;
-  createdAt: string;
-  pdfUrl?: string;
+  sand: number;
+  silt: number;
+  clay: number;
+  texture?: string; // e.g., "Sandy", "Clayey", etc.
+  classification?: string;
+  createdAt?: string;
 }
