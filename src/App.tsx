@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import SoilAnalysis from './pages/SoilAnalysis';
-import Report from './pages/Report';
+import Login from './pages/login';
+import Dashboard from './pages/dashboard';
+import SoilAnalysis from './pages/soilAnalysis';
+import Report from './pages/report';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ConfigProvider } from 'antd';
 
