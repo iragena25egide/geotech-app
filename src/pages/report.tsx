@@ -18,7 +18,7 @@ import {
   FileTextOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import { api } from '../services/api';
+import { api } from '../../services/api';
 import { SoilSample } from '../types';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
