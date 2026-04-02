@@ -20,7 +20,7 @@ import {
   FileTextOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import { api } from '../services/api';
+import { api } from '../../services/api';
 import { SoilSample } from '../types';
 
 const { Header, Sider, Content } = Layout;
