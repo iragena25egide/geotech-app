@@ -18,7 +18,7 @@ import {
   LogoutOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { api } from '../services/api';
+import { api } from '../../services/api';
 import { Project } from '../types';
 
 const { Header, Sider, Content } = Layout;
