@@ -9,8 +9,7 @@ import {
   Card,
   Alert,
   Space,
-  message,
-  Spin,
+  message
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -21,11 +20,16 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import { api } from '../../services/api';
-import { SoilSample } from '../types';
+//import { SoilSample } from '../types';
 
 const { Header, Sider, Content } = Layout;
 
-// Simple USDA classification based on sand, silt, clay percentages
+
+interface SoilSample {
+  id?: number;
+  
+}
+
 function classifySoil(sand: number, silt: number, clay: number): string {
   if (sand > 70) return 'Sandy';
   if (clay > 40) return 'Clayey';
