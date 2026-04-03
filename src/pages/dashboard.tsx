@@ -19,6 +19,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import { api } from '../../services/api';
+import { Project } from "../types/index";
 
 
 const { Header, Sider, Content } = Layout;
