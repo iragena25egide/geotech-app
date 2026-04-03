@@ -28,6 +28,7 @@ const { Header, Sider, Content } = Layout;
 interface SoilSample {
   id?: number;
   
+  
 }
 
 function classifySoil(sand: number, silt: number, clay: number): string {
