@@ -7,7 +7,10 @@ let mainWindow;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('no-sandbox'); 
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -21,7 +24,7 @@ function createWindow() {
     },
   });
 
-  // Load the Vite dev server URL
+  // Load Vite dev server
   mainWindow.loadURL("http://localhost:5173");
 
   
@@ -33,7 +36,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  Menu.setApplicationMenu(null); 
+  Menu.setApplicationMenu(null);
   createWindow();
 });
 
