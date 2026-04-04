@@ -1,13 +1,11 @@
-import { app, BrowserWindow,Menu } from "electron";
+import { app, BrowserWindow, Menu } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
 let mainWindow;
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 app.disableHardwareAcceleration();
 
@@ -23,16 +21,21 @@ function createWindow() {
     },
   });
 
+  // Load the Vite dev server URL
+  mainWindow.loadURL("http://localhost:5173");
+
   
+  //mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
 }
 
-app.whenReady().then(
-  Menu.setApplicationMenu(null),
-  createWindow);
+app.whenReady().then(() => {
+  Menu.setApplicationMenu(null); 
+  createWindow();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
