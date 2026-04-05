@@ -14,11 +14,15 @@ export default function Login({ onLogin }: Props) {
     setLoading(true);
     try {
       const res = await api.post('/auth/login', values);
+      console.log('LOGIN RESPONSE:', res.data);
       localStorage.setItem('token', res.data.access_token);
-      onLogin();
       message.success('Login successful');
-    } catch (err) {
-      message.error('Invalid email or password');
+      onLogin();
+    } catch (err: any) {
+      console.log('LOGIN ERROR:', err.response?.data);
+      message.error(
+        err.response?.data?.message || 'Invalid email or password'
+      );
     } finally {
       setLoading(false);
     }
@@ -28,9 +32,11 @@ export default function Login({ onLogin }: Props) {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <Card className="w-full max-w-md shadow-lg rounded-lg">
         <div className="flex justify-center mb-6">
-          <img src="../public/icon.jpeg" alt="GeoTech" className="w-16 h-16" />
+          <img src="/icon.jpeg" alt="GeoTech" className="w-16 h-16" />
         </div>
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">GeoTech</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          GeoTech
+        </h2>
         <Form
           name="login"
           onFinish={onFinish}
@@ -42,7 +48,7 @@ export default function Login({ onLogin }: Props) {
             name="email"
             rules={[
               { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' }
+              { type: 'email', message: 'Please enter a valid email!' },
             ]}
           >
             <Input

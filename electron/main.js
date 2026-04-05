@@ -9,8 +9,13 @@ const __dirname = path.dirname(__filename);
 
 
 app.disableHardwareAcceleration();
+
+
+app.commandLine.appendSwitch('no-sandbox');               
+app.commandLine.appendSwitch('disable-gpu-sandbox');
 app.commandLine.appendSwitch('disable-software-rasterizer');
-app.commandLine.appendSwitch('no-sandbox'); 
+app.commandLine.appendSwitch('disable-features', 'NetworkService,NetworkServiceInProcess');
+app.commandLine.appendSwitch('disable-dev-shm-usage');   // For some Windows environments
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -24,11 +29,11 @@ function createWindow() {
     },
   });
 
-  // Load Vite dev server
-  mainWindow.loadURL("http://localhost:5173");
-
   
-  //mainWindow.webContents.openDevTools();
+  mainWindow.loadURL("http://localhost:5173");
+  
+  
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", () => {
     mainWindow = null;
