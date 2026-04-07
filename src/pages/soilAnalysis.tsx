@@ -42,13 +42,13 @@ interface SoilSample {
   projectId: number;
 }
 
-
+// Simplified USCS classification based on LL, PL, P200, D60/D30/D10
 function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: number): { symbol: string; groupName: string } {
   const pi = ll - pl;
-  const isFineGrained = p200 > 50; 
+  const isFineGrained = p200 > 50; // more than 50% passes #200 sieve
 
   if (isFineGrained) {
-    
+    // Fine-grained soils
     if (ll < 50) {
       if (pi > 7) return { symbol: 'CL', groupName: 'Lean Clay' };
       if (pi >= 4 && pi <= 7) return { symbol: 'CL-ML', groupName: 'Silty Clay' };
@@ -58,9 +58,8 @@ function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: numb
       return { symbol: 'MH', groupName: 'Elastic Silt' };
     }
   } else {
-   
-    const sandPercent = 100 - p200; 
-    const isSand = p4 > 50; 
+    // Coarse-grained soils (>50% retained on #200)
+    const isSand = p4 > 50; // more than 50% passes #4 → sand, else gravel (simplified)
     if (isSand) {
       if (cu >= 6 && cc >= 1 && cc <= 3) return { symbol: 'SW', groupName: 'Well-Graded Sand' };
       return { symbol: 'SP', groupName: 'Poorly-Graded Sand' };
@@ -77,6 +76,7 @@ export default function SoilAnalysis() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [projectName, setProjectName] = useState<string>('');
   const [computed, setComputed] = useState<{
     pi: number | null;
     cu: number | null;
@@ -92,17 +92,24 @@ export default function SoilAnalysis() {
   });
 
   useEffect(() => {
-    if (!projectId) navigate('/');
+    if (!projectId) {
+      navigate('/');
+      return;
+    }
+    fetchProjectName();
   }, [projectId, navigate]);
 
+  const fetchProjectName = async () => {
+    try {
+      const response = await api.get(`/projects/${projectId}`);
+      setProjectName(response.data.name);
+    } catch (error) {
+      message.error('Failed to load project name');
+      setProjectName('Unknown Project');
+    }
+  };
 
- const getProjectName=async()=>{
-    const name=await api.get(`projects/:projectId`);
-
-    console.log(name);
- }
-
-  
+  // Real-time calculation of PI, Cu, Cc and USCS classification
   const handleValuesChange = (_: any, allValues: any) => {
     const { ll, pl, d60, d30, d10, p200, p4 } = allValues;
     let pi: number | null = null;
@@ -132,7 +139,6 @@ export default function SoilAnalysis() {
 
   const onFinish = async (values: any) => {
     setSaving(true);
-    
     const payload: SoilSample = {
       projectId: Number(projectId),
       ll: values.ll,
@@ -190,7 +196,7 @@ export default function SoilAnalysis() {
             >
               Back to Dashboard
             </Button>
-            <h2 style={{ margin: 0 }}>Soil Analysis - Project {projectName}</h2>
+            <h2 style={{ margin: 0 }}>Soil Analysis - Project {projectName || projectId}</h2>
           </Space>
         </Header>
         <Content style={{ margin: '24px' }}>
