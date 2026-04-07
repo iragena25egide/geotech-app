@@ -45,7 +45,7 @@ interface SoilSample {
 
 function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: number): { symbol: string; groupName: string } {
   const pi = ll - pl;
-  const isFineGrained = p200 > 50; // more than 50% passes #200 sieve
+  const isFineGrained = p200 > 50; 
 
   if (isFineGrained) {
   
