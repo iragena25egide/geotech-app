@@ -42,13 +42,13 @@ interface SoilSample {
   projectId: number;
 }
 
-// Simplified USCS classification based on LL, PL, P200, D60/D30/D10
+
 function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: number): { symbol: string; groupName: string } {
   const pi = ll - pl;
-  const isFineGrained = p200 > 50; // more than 50% passes #200 sieve
+  const isFineGrained = p200 > 50; 
 
   if (isFineGrained) {
-    // Fine-grained soils
+    
     if (ll < 50) {
       if (pi > 7) return { symbol: 'CL', groupName: 'Lean Clay' };
       if (pi >= 4 && pi <= 7) return { symbol: 'CL-ML', groupName: 'Silty Clay' };
@@ -58,7 +58,7 @@ function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: numb
       return { symbol: 'MH', groupName: 'Elastic Silt' };
     }
   } else {
-    // Coarse-grained soils (>50% retained on #200)
+   
     const sandPercent = 100 - p200; // approximate
     const isSand = p4 > 50; // more than 50% passes #4 → sand, else gravel (simplified)
     if (isSand) {
@@ -183,7 +183,7 @@ export default function SoilAnalysis() {
             >
               Back to Dashboard
             </Button>
-            <h2 style={{ margin: 0 }}>Soil Analysis - Project {projectId}</h2>
+            <h2 style={{ margin: 0 }}>Soil Analysis - Project {projectName}</h2>
           </Space>
         </Header>
         <Content style={{ margin: '24px' }}>
