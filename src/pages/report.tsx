@@ -19,12 +19,28 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import { api } from '../../services/api';
-
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
+
+interface SoilSample {
+  id?: number;
+  ll: number;
+  pl: number;
+  p200: number;
+  p4: number;
+  d60: number;
+  d30: number;
+  d10: number;
+  pi: number;
+  cu: number;
+  cc: number;
+  symbol: string;
+  groupName: string;
+  projectId: number;
+}
 
 export default function Report() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -57,35 +73,37 @@ export default function Report() {
   const generatePDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
-    doc.text(`Soil Analysis Report - ${projectName}`, 14, 20);
+    doc.text(`Geotechnical Report - ${projectName}`, 14, 20);
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
 
     const tableColumn = [
-      'Moisture (%)',
-      'Org. Matter (%)',
-      'pH',
-      'N (mg/kg)',
-      'P (mg/kg)',
-      'K (mg/kg)',
-      'Sand (%)',
-      'Silt (%)',
-      'Clay (%)',
-      'Texture',
-      'Classification',
+      'LL (%)',
+      'PL (%)',
+      'PI (%)',
+      'P200 (%)',
+      'P4 (%)',
+      'D60 (mm)',
+      'D30 (mm)',
+      'D10 (mm)',
+      'Cu',
+      'Cc',
+      'USCS Symbol',
+      'Group Name',
     ];
     const tableRows = samples.map((s) => [
-      s.moisture,
-      s.organicMatter,
-      s.pH,
-      s.nitrogen,
-      s.phosphorus,
-      s.potassium,
-      s.sand,
-      s.silt,
-      s.clay,
-      s.texture,
-      s.classification,
+      s.ll,
+      s.pl,
+      s.pi,
+      s.p200,
+      s.p4,
+      s.d60,
+      s.d30,
+      s.d10,
+      s.cu,
+      s.cc,
+      s.symbol,
+      s.groupName,
     ]);
 
     autoTable(doc, {
@@ -102,17 +120,18 @@ export default function Report() {
   };
 
   const columns = [
-    { title: 'Moisture (%)', dataIndex: 'moisture', key: 'moisture' },
-    { title: 'Org. Matter (%)', dataIndex: 'organicMatter', key: 'organicMatter' },
-    { title: 'pH', dataIndex: 'pH', key: 'pH' },
-    { title: 'N (mg/kg)', dataIndex: 'nitrogen', key: 'nitrogen' },
-    { title: 'P (mg/kg)', dataIndex: 'phosphorus', key: 'phosphorus' },
-    { title: 'K (mg/kg)', dataIndex: 'potassium', key: 'potassium' },
-    { title: 'Sand (%)', dataIndex: 'sand', key: 'sand' },
-    { title: 'Silt (%)', dataIndex: 'silt', key: 'silt' },
-    { title: 'Clay (%)', dataIndex: 'clay', key: 'clay' },
-    { title: 'Texture', dataIndex: 'texture', key: 'texture' },
-    { title: 'Classification', dataIndex: 'classification', key: 'classification' },
+    { title: 'LL (%)', dataIndex: 'll', key: 'll', sorter: (a: SoilSample, b: SoilSample) => a.ll - b.ll },
+    { title: 'PL (%)', dataIndex: 'pl', key: 'pl', sorter: (a, b) => a.pl - b.pl },
+    { title: 'PI (%)', dataIndex: 'pi', key: 'pi', sorter: (a, b) => a.pi - b.pi },
+    { title: 'P200 (%)', dataIndex: 'p200', key: 'p200', sorter: (a, b) => a.p200 - b.p200 },
+    { title: 'P4 (%)', dataIndex: 'p4', key: 'p4', sorter: (a, b) => a.p4 - b.p4 },
+    { title: 'D60 (mm)', dataIndex: 'd60', key: 'd60', sorter: (a, b) => a.d60 - b.d60 },
+    { title: 'D30 (mm)', dataIndex: 'd30', key: 'd30', sorter: (a, b) => a.d30 - b.d30 },
+    { title: 'D10 (mm)', dataIndex: 'd10', key: 'd10', sorter: (a, b) => a.d10 - b.d10 },
+    { title: 'Cu', dataIndex: 'cu', key: 'cu', sorter: (a, b) => a.cu - b.cu },
+    { title: 'Cc', dataIndex: 'cc', key: 'cc', sorter: (a, b) => a.cc - b.cc },
+    { title: 'USCS Symbol', dataIndex: 'symbol', key: 'symbol' },
+    { title: 'Group Name', dataIndex: 'groupName', key: 'groupName' },
   ];
 
   const logout = () => {
@@ -146,12 +165,12 @@ export default function Report() {
             >
               Back to Dashboard
             </Button>
-            <Title level={4} style={{ margin: 0 }}>Report - {projectName}</Title>
+            <Title level={4} style={{ margin: 0 }}>Geotechnical Report - {projectName}</Title>
           </Space>
         </Header>
         <Content style={{ margin: '24px' }}>
           <Card
-            title="Soil Samples"
+            title="Soil Test Results"
             extra={
               samples.length > 0 && (
                 <Button type="primary" icon={<DownloadOutlined />} onClick={generatePDF}>
