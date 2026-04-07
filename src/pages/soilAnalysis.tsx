@@ -58,8 +58,9 @@ function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: numb
       return { symbol: 'MH', groupName: 'Elastic Silt' };
     }
   } else {
-    // Coarse-grained soils (>50% retained on #200)
-    const isSand = p4 > 50; // more than 50% passes #4 → sand, else gravel (simplified)
+  
+    const isSand = p4 > 50; 
+    
     if (isSand) {
       if (cu >= 6 && cc >= 1 && cc <= 3) return { symbol: 'SW', groupName: 'Well-Graded Sand' };
       return { symbol: 'SP', groupName: 'Poorly-Graded Sand' };
