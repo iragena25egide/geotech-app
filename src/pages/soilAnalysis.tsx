@@ -125,7 +125,7 @@ export default function SoilAnalysis() {
 
   const onFinish = async (values: any) => {
     setSaving(true);
-    // Use computed values (or fallback to 0 if not computed – but required fields should prevent this)
+    
     const payload: SoilSample = {
       projectId: Number(projectId),
       ll: values.ll,
