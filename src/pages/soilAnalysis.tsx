@@ -196,7 +196,7 @@ export default function SoilAnalysis() {
             >
               Back to Dashboard
             </Button>
-            <h2 style={{ margin: 0 }}>Soil Analysis - Project {projectName || projectId}</h2>
+            <h2 style={{ margin: 0 }}>Soil Analysis - {projectName || projectId}</h2>
           </Space>
         </Header>
         <Content style={{ margin: '24px' }}>
