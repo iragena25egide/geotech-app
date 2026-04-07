@@ -59,8 +59,8 @@ function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: numb
     }
   } else {
    
-    const sandPercent = 100 - p200; // approximate
-    const isSand = p4 > 50; // more than 50% passes #4 → sand, else gravel (simplified)
+    const sandPercent = 100 - p200; 
+    const isSand = p4 > 50; 
     if (isSand) {
       if (cu >= 6 && cc >= 1 && cc <= 3) return { symbol: 'SW', groupName: 'Well-Graded Sand' };
       return { symbol: 'SP', groupName: 'Poorly-Graded Sand' };
@@ -95,7 +95,7 @@ export default function SoilAnalysis() {
     if (!projectId) navigate('/');
   }, [projectId, navigate]);
 
-  // Real-time calculation of PI, Cu, Cc and USCS classification
+  
   const handleValuesChange = (_: any, allValues: any) => {
     const { ll, pl, d60, d30, d10, p200, p4 } = allValues;
     let pi: number | null = null;
