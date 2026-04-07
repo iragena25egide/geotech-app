@@ -95,6 +95,13 @@ export default function SoilAnalysis() {
     if (!projectId) navigate('/');
   }, [projectId, navigate]);
 
+
+ const getProjectName=async()=>{
+    const name=await api.get(`projects/:projectId`);
+
+    console.log(name);
+ }
+
   
   const handleValuesChange = (_: any, allValues: any) => {
     const { ll, pl, d60, d30, d10, p200, p4 } = allValues;
