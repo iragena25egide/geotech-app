@@ -42,13 +42,13 @@ interface SoilSample {
   projectId: number;
 }
 
-// Simplified USCS classification based on LL, PL, P200, D60/D30/D10
+
 function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: number): { symbol: string; groupName: string } {
   const pi = ll - pl;
   const isFineGrained = p200 > 50; // more than 50% passes #200 sieve
 
   if (isFineGrained) {
-    // Fine-grained soils
+  
     if (ll < 50) {
       if (pi > 7) return { symbol: 'CL', groupName: 'Lean Clay' };
       if (pi >= 4 && pi <= 7) return { symbol: 'CL-ML', groupName: 'Silty Clay' };
