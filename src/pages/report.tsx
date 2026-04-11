@@ -58,7 +58,7 @@ export default function Report() {
     setLoading(true);
     try {
       const [samplesRes, projectRes] = await Promise.all([
-        api.get(`/soils?projectId=${projectId}`),
+        api.get(`/soil?projectId=${projectId}`),
         api.get(`/${projectId}`),
       ]);
       setSamples(samplesRes.data);
