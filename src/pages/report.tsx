@@ -59,7 +59,7 @@ export default function Report() {
     try {
       const [samplesRes, projectRes] = await Promise.all([
         api.get(`/soils?projectId=${projectId}`),
-        api.get(`/projects/${projectId}`),
+        api.get(`/${projectId}`),
       ]);
       setSamples(samplesRes.data);
       setProjectName(projectRes.data.name);
