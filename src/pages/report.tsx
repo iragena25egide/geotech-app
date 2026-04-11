@@ -149,7 +149,7 @@ export default function Report() {
           <Menu.Item key="1" icon={<DashboardOutlined />} onClick={() => navigate('/')}>
             Dashboard
           </Menu.Item>
-          <Menu.Item key="2" icon={<ExperimentOutlined />} onClick={() => navigate(`/analysis/${projectId}`)}>
+          <Menu.Item key="2" icon={<ExperimentOutlined />} onClick={() => navigate(`/${projectId}`)}>
             Soil Analysis
           </Menu.Item>
           <Menu.Item key="3" icon={<FileTextOutlined />}>Report</Menu.Item>
