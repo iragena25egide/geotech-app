@@ -12,6 +12,4 @@ export interface SoilSample {
   organicMatter: number;
   pH: number;
   nitrogen: number;
-  phosphorus: number;
-  potassium: number;
 }
