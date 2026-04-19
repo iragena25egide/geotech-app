@@ -14,8 +14,4 @@ export interface SoilSample {
   nitrogen: number;
   phosphorus: number;
   potassium: number;
-  sand: number;
-  silt: number;
-  clay: number;
-  texture?: string; // e.g., "Sandy", "Clayey", etc.
 }
