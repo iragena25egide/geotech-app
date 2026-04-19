@@ -5,6 +5,4 @@ export interface Project {
   createdAt?: string;
 }
 
-export interface SoilSample {
-  id?: number;
-}
+export interface SoilSample {}
