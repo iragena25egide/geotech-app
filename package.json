@@ -13,7 +13,7 @@
   "dependencies": {
     "@ant-design/icons": "^6.1.1",
     "@heroicons/react": "^2.2.0",
-    "antd": "^6.3.4",
+    "antd": "^6.3.6",
     "axios": "^1.14.0",
     "electron": "^28.3.3",
     "jspdf": "^4.2.1",
