@@ -10,6 +10,4 @@ export interface SoilSample {
   projectId: number;
   moisture: number;
   organicMatter: number;
-  pH: number;
-  nitrogen: number;
 }
