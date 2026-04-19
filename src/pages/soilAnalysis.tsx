@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Layout,
   Menu,
@@ -14,7 +14,7 @@ import {
   Table,
   Modal,
   Popconfirm,
-} from 'antd';
+} from "antd";
 import {
   ArrowLeftOutlined,
   ExperimentOutlined,
@@ -24,8 +24,8 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-} from '@ant-design/icons';
-import { api } from '../../services/api';
+} from "@ant-design/icons";
+import { api } from "../../services/api";
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
@@ -47,28 +47,36 @@ interface SoilSample {
   projectId: number;
 }
 
-
-function classifyUSCS(ll: number, pl: number, p200: number, cu: number, cc: number): { symbol: string; groupName: string } {
+function classifyUSCS(
+  ll: number,
+  pl: number,
+  p200: number,
+  cu: number,
+  cc: number
+): { symbol: string; groupName: string } {
   const pi = ll - pl;
   const isFineGrained = p200 > 50;
 
   if (isFineGrained) {
     if (ll < 50) {
-      if (pi > 7) return { symbol: 'CL', groupName: 'Lean Clay' };
-      if (pi >= 4 && pi <= 7) return { symbol: 'CL-ML', groupName: 'Silty Clay' };
-      return { symbol: 'ML', groupName: 'Silt' };
+      if (pi > 7) return { symbol: "CL", groupName: "Lean Clay" };
+      if (pi >= 4 && pi <= 7)
+        return { symbol: "CL-ML", groupName: "Silty Clay" };
+      return { symbol: "ML", groupName: "Silt" };
     } else {
-      if (pi > 7) return { symbol: 'CH', groupName: 'Fat Clay' };
-      return { symbol: 'MH', groupName: 'Elastic Silt' };
+      if (pi > 7) return { symbol: "CH", groupName: "Fat Clay" };
+      return { symbol: "MH", groupName: "Elastic Silt" };
     }
   } else {
     const isSand = p4 > 50;
     if (isSand) {
-      if (cu >= 6 && cc >= 1 && cc <= 3) return { symbol: 'SW', groupName: 'Well-Graded Sand' };
-      return { symbol: 'SP', groupName: 'Poorly-Graded Sand' };
+      if (cu >= 6 && cc >= 1 && cc <= 3)
+        return { symbol: "SW", groupName: "Well-Graded Sand" };
+      return { symbol: "SP", groupName: "Poorly-Graded Sand" };
     } else {
-      if (cu >= 4 && cc >= 1 && cc <= 3) return { symbol: 'GW', groupName: 'Well-Graded Gravel' };
-      return { symbol: 'GP', groupName: 'Poorly-Graded Gravel' };
+      if (cu >= 4 && cc >= 1 && cc <= 3)
+        return { symbol: "GW", groupName: "Well-Graded Gravel" };
+      return { symbol: "GP", groupName: "Poorly-Graded Gravel" };
     }
   }
 }
@@ -80,7 +88,7 @@ export default function SoilAnalysis() {
   const [samples, setSamples] = useState<SoilSample[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [projectName, setProjectName] = useState<string>('');
+  const [projectName, setProjectName] = useState<string>("");
   const [modalVisible, setModalVisible] = useState(false);
   const [editingSample, setEditingSample] = useState<SoilSample | null>(null);
   const [computed, setComputed] = useState<{
@@ -99,7 +107,7 @@ export default function SoilAnalysis() {
 
   useEffect(() => {
     if (!projectId) {
-      navigate('/');
+      navigate("/");
       return;
     }
     fetchProjectName();
@@ -111,8 +119,8 @@ export default function SoilAnalysis() {
       const response = await api.get(`/projects/${projectId}`);
       setProjectName(response.data.name);
     } catch (error) {
-      message.error('Failed to load project name');
-      setProjectName('Unknown Project');
+      message.error("Failed to load project name");
+      setProjectName("Unknown Project");
     }
   };
 
@@ -122,13 +130,12 @@ export default function SoilAnalysis() {
       const response = await api.get(`/soil?project=${projectId}`);
       setSamples(response.data);
     } catch (error) {
-      message.error('Failed to load soil samples');
+      message.error("Failed to load soil samples");
     } finally {
       setLoading(false);
     }
   };
 
-  
   const handleValuesChange = (_: any, allValues: any) => {
     const { ll, pl, d60, d30, d10, p200, p4 } = allValues;
     let pi: number | null = null;
@@ -147,7 +154,17 @@ export default function SoilAnalysis() {
 
     let symbol: string | null = null;
     let groupName: string | null = null;
-    if (ll != null && pl != null && p200 != null && cu != null && cc != null && d60 != null && d30 != null && d10 != null && p4 != null) {
+    if (
+      ll != null &&
+      pl != null &&
+      p200 != null &&
+      cu != null &&
+      cc != null &&
+      d60 != null &&
+      d30 != null &&
+      d10 != null &&
+      p4 != null
+    ) {
       const result = classifyUSCS(ll, pl, p200, cu, cc);
       symbol = result.symbol;
       groupName = result.groupName;
@@ -159,7 +176,13 @@ export default function SoilAnalysis() {
   const openAddModal = () => {
     setEditingSample(null);
     form.resetFields();
-    setComputed({ pi: null, cu: null, cc: null, symbol: null, groupName: null });
+    setComputed({
+      pi: null,
+      cu: null,
+      cc: null,
+      symbol: null,
+      groupName: null,
+    });
     setModalVisible(true);
   };
 
@@ -190,10 +213,10 @@ export default function SoilAnalysis() {
   const handleDelete = async (id: number) => {
     try {
       await api.delete(`/soil/${id}`);
-      message.success('Sample deleted successfully');
+      message.success("Sample deleted successfully");
       fetchSamples();
     } catch (error) {
-      message.error('Failed to delete sample');
+      message.error("Failed to delete sample");
     }
   };
 
@@ -213,42 +236,44 @@ export default function SoilAnalysis() {
         pi: computed.pi ?? 0,
         cu: computed.cu ?? 0,
         cc: computed.cc ?? 0,
-        symbol: computed.symbol ?? 'Unknown',
-        groupName: computed.groupName ?? 'Unknown',
+        symbol: computed.symbol ?? "Unknown",
+        groupName: computed.groupName ?? "Unknown",
       };
 
       if (editingSample?.id) {
         await api.put(`/soil/${editingSample.id}`, payload);
-        message.success('Sample updated successfully');
+        message.success("Sample updated successfully");
       } else {
-        await api.post('/soil', payload);
-        message.success('Sample added successfully');
+        await api.post("/soil", payload);
+        message.success("Sample added successfully");
       }
       setModalVisible(false);
       fetchSamples();
     } catch (err) {
-      message.error(editingSample ? 'Failed to update sample' : 'Failed to add sample');
+      message.error(
+        editingSample ? "Failed to update sample" : "Failed to add sample"
+      );
     } finally {
       setSaving(false);
     }
   };
 
   const columns = [
-    { title: 'LL (%)', dataIndex: 'll', key: 'll' },
-    { title: 'PL (%)', dataIndex: 'pl', key: 'pl' },
-    { title: 'PI (%)', dataIndex: 'pi', key: 'pi' },
-    { title: 'P200 (%)', dataIndex: 'p200', key: 'p200' },
-    { title: 'P4 (%)', dataIndex: 'p4', key: 'p4' },
-    { title: 'D60 (mm)', dataIndex: 'd60', key: 'd60' },
-    { title: 'D30 (mm)', dataIndex: 'd30', key: 'd30' },
-    { title: 'D10 (mm)', dataIndex: 'd10', key: 'd10' },
-    { title: 'Cu', dataIndex: 'cu', key: 'cu' },
-    { title: 'Cc', dataIndex: 'cc', key: 'cc' },
-    { title: 'USCS', dataIndex: 'symbol', key: 'symbol' },
-    { title: 'Group Name', dataIndex: 'groupName', key: 'groupName' },
+    { title: "LL (%)", dataIndex: "ll", key: "ll" },
+    { title: "PL (%)", dataIndex: "pl", key: "pl" },
+    { title: "PI (%)", dataIndex: "pi", key: "pi" },
+    { title: "P200 (%)", dataIndex: "p200", key: "p200" },
+    { title: "P4 (%)", dataIndex: "p4", key: "p4" },
+    { title: "D60 (mm)", dataIndex: "d60", key: "d60" },
+    { title: "D30 (mm)", dataIndex: "d30", key: "d30" },
+    { title: "D10 (mm)", dataIndex: "d10", key: "d10" },
+    { title: "Cu", dataIndex: "cu", key: "cu" },
+    { title: "Cc", dataIndex: "cc", key: "cc" },
+    { title: "USCS", dataIndex: "symbol", key: "symbol" },
+    { title: "Group Name", dataIndex: "groupName", key: "groupName" },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: "Actions",
+      key: "actions",
       render: (_: any, record: SoilSample) => (
         <Space>
           <Button icon={<EditOutlined />} onClick={() => openEditModal(record)}>
@@ -270,44 +295,67 @@ export default function SoilAnalysis() {
   ];
 
   const logout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider theme="dark">
-        <div className="logo" style={{ padding: 16, color: 'white', fontSize: 18, fontWeight: 'bold' }}>
+        <div
+          className="logo"
+          style={{
+            padding: 16,
+            color: "white",
+            fontSize: 18,
+            fontWeight: "bold",
+          }}
+        >
           GeoTech
         </div>
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['2']}>
-          <Menu.Item key="1" icon={<DashboardOutlined />} onClick={() => navigate('/')}>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={["2"]}>
+          <Menu.Item
+            key="1"
+            icon={<DashboardOutlined />}
+            onClick={() => navigate("/")}
+          >
             Dashboard
           </Menu.Item>
-          <Menu.Item key="2" icon={<ExperimentOutlined />}>Soil Analysis</Menu.Item>
-          <Menu.Item key="3" icon={<FileTextOutlined />} onClick={() => navigate(`/report/${projectId}`)}>
+          <Menu.Item key="2" icon={<ExperimentOutlined />}>
+            Soil Analysis
+          </Menu.Item>
+          <Menu.Item
+            key="3"
+            icon={<FileTextOutlined />}
+            onClick={() => navigate(`/report/${projectId}`)}
+          >
             Report
           </Menu.Item>
-          <Menu.Item key="4" icon={<LogoutOutlined />} onClick={logout}>Logout</Menu.Item>
+          <Menu.Item key="4" icon={<LogoutOutlined />} onClick={logout}>
+            Logout
+          </Menu.Item>
         </Menu>
       </Sider>
       <Layout>
-        <Header style={{ background: '#fff', padding: '0 24px' }}>
+        <Header style={{ background: "#fff", padding: "0 24px" }}>
           <Space>
-            <Button
-              icon={<ArrowLeftOutlined />}
-              onClick={() => navigate('/')}
-            >
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/")}>
               Back to Dashboard
             </Button>
-            <h2 style={{ margin: 0 }}>Soil Analysis - {projectName || projectId}</h2>
+            <h2 style={{ margin: 0 }}>
+              Soil Analysis - {projectName || projectId}
+            </h2>
           </Space>
         </Header>
-        <Content style={{ margin: '24px' }}>
+        <Content style={{ margin: "24px" }}>
           <Card
             title="Soil Samples"
             extra={
-              <Button type="primary" icon={<PlusOutlined />} onClick={openAddModal}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={openAddModal}
+              >
                 Add New Sample
               </Button>
             }
@@ -321,7 +369,7 @@ export default function SoilAnalysis() {
               pagination={{ pageSize: 10 }}
             />
             {samples.length === 0 && !loading && (
-              <div style={{ textAlign: 'center', padding: 40 }}>
+              <div style={{ textAlign: "center", padding: 40 }}>
                 No soil samples found. Click "Add New Sample" to create one.
               </div>
             )}
@@ -329,52 +377,116 @@ export default function SoilAnalysis() {
         </Content>
       </Layout>
 
-      
       <Modal
-        title={editingSample ? 'Edit Soil Sample' : 'Add New Soil Sample'}
+        title={editingSample ? "Edit Soil Sample" : "Add New Soil Sample"}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={[
           <Button key="cancel" onClick={() => setModalVisible(false)}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" loading={saving} onClick={handleModalSubmit}>
-            {editingSample ? 'Update' : 'Save'}
+          <Button
+            key="submit"
+            type="primary"
+            loading={saving}
+            onClick={handleModalSubmit}
+          >
+            {editingSample ? "Update" : "Save"}
           </Button>,
         ]}
         width={800}
       >
         <Form form={form} layout="vertical" onValuesChange={handleValuesChange}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
-            <Form.Item name="ll" label="Liquid Limit (LL)" rules={[{ required: true, message: 'Required' }]}>
-              <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: 16,
+            }}
+          >
+            <Form.Item
+              name="ll"
+              label="Liquid Limit (LL)"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <InputNumber min={0} step={0.1} style={{ width: "100%" }} />
             </Form.Item>
-            <Form.Item name="pl" label="Plastic Limit (PL)" rules={[{ required: true, message: 'Required' }]}>
-              <InputNumber min={0} step={0.1} style={{ width: '100%' }} />
+            <Form.Item
+              name="pl"
+              label="Plastic Limit (PL)"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <InputNumber min={0} step={0.1} style={{ width: "100%" }} />
             </Form.Item>
-            <Form.Item name="p200" label="Percent passing #200 sieve (%)" rules={[{ required: true, message: 'Required' }]}>
-              <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+            <Form.Item
+              name="p200"
+              label="Percent passing #200 sieve (%)"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <InputNumber
+                min={0}
+                max={100}
+                step={0.1}
+                style={{ width: "100%" }}
+              />
             </Form.Item>
-            <Form.Item name="p4" label="Percent passing #4 sieve (%)" rules={[{ required: true, message: 'Required' }]}>
-              <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+            <Form.Item
+              name="p4"
+              label="Percent passing #4 sieve (%)"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <InputNumber
+                min={0}
+                max={100}
+                step={0.1}
+                style={{ width: "100%" }}
+              />
             </Form.Item>
-            <Form.Item name="d60" label="D60 (mm)" rules={[{ required: true, message: 'Required' }]}>
-              <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+            <Form.Item
+              name="d60"
+              label="D60 (mm)"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <InputNumber min={0} step={0.01} style={{ width: "100%" }} />
             </Form.Item>
-            <Form.Item name="d30" label="D30 (mm)" rules={[{ required: true, message: 'Required' }]}>
-              <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+            <Form.Item
+              name="d30"
+              label="D30 (mm)"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <InputNumber min={0} step={0.01} style={{ width: "100%" }} />
             </Form.Item>
-            <Form.Item name="d10" label="D10 (mm)" rules={[{ required: true, message: 'Required' }]}>
-              <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+            <Form.Item
+              name="d10"
+              label="D10 (mm)"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <InputNumber min={0} step={0.01} style={{ width: "100%" }} />
             </Form.Item>
           </div>
 
-          {(computed.pi !== null || computed.cu !== null || computed.cc !== null || computed.symbol) && (
-            <Card size="small" title="Computed Parameters & Classification" style={{ marginTop: 16, backgroundColor: '#f6f6f6' }}>
+          {(computed.pi !== null ||
+            computed.cu !== null ||
+            computed.cc !== null ||
+            computed.symbol) && (
+            <Card
+              size="small"
+              title="Computed Parameters & Classification"
+              style={{ marginTop: 16, backgroundColor: "#f6f6f6" }}
+            >
               <Space direction="vertical">
-                <Text>Plasticity Index (PI) = {computed.pi !== null ? computed.pi : '—'}</Text>
-                <Text>Coefficient of Uniformity (Cu) = {computed.cu !== null ? computed.cu : '—'}</Text>
-                <Text>Coefficient of Curvature (Cc) = {computed.cc !== null ? computed.cc : '—'}</Text>
+                <Text>
+                  Plasticity Index (PI) ={" "}
+                  {computed.pi !== null ? computed.pi : "—"}
+                </Text>
+                <Text>
+                  Coefficient of Uniformity (Cu) ={" "}
+                  {computed.cu !== null ? computed.cu : "—"}
+                </Text>
+                <Text>
+                  Coefficient of Curvature (Cc) ={" "}
+                  {computed.cc !== null ? computed.cc : "—"}
+                </Text>
                 {computed.symbol && (
                   <Alert
                     message={`USCS Classification: ${computed.symbol} – ${computed.groupName}`}
