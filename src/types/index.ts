@@ -18,6 +18,4 @@ export interface SoilSample {
   silt: number;
   clay: number;
   texture?: string; // e.g., "Sandy", "Clayey", etc.
-  classification?: string;
-  createdAt?: string;
 }
