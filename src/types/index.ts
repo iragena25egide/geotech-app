@@ -4,5 +4,3 @@ export interface Project {
   description?: string;
   createdAt?: string;
 }
-
-export interface SoilSample {}
