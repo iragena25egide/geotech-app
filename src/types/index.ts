@@ -8,6 +8,4 @@ export interface Project {
 export interface SoilSample {
   id?: number;
   projectId: number;
-  moisture: number;
-  organicMatter: number;
 }
