@@ -32,7 +32,6 @@ export default function Login({ onLogin }: Props) {
 
       message.success("Login successful");
 
-      // Trigger parent login handler
       onLogin();
     } catch (err: unknown) {
       let errorMessage = "Invalid email or password";
