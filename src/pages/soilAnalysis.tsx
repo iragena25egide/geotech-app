@@ -162,10 +162,6 @@ export default function SoilAnalysis() {
     }
   };
 
-  /* ===============================
-     COMPUTATION LOGIC
-  ============================== */
-
   const handleValuesChange = (_: unknown, values: SoilFormValues) => {
     const { ll, pl, p200, p4, d60, d30, d10 } = values;
 
