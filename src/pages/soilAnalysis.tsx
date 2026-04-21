@@ -135,10 +135,6 @@ export default function SoilAnalysis() {
     fetchSamples();
   }, [projectId]);
 
-  /* ===============================
-     FETCH DATA
-  ============================== */
-
   const fetchProjectName = async () => {
     try {
       const res = await api.get(`/projects/${projectId}`);
