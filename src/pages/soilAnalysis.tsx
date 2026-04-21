@@ -205,10 +205,6 @@ export default function SoilAnalysis() {
     });
   };
 
-  /* ===============================
-     MODAL
-  ============================== */
-
   const openAddModal = () => {
     setEditingSample(null);
     form.resetFields();
