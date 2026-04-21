@@ -1,28 +1,54 @@
-import { useState } from 'react';
-import { Form, Input, Button, Card, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { api } from '../../services/api';
+import { useState } from "react";
+import { Form, Input, Button, Card, message } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { AxiosError } from "axios";
+import { api } from "../../services/api";
 
 interface Props {
   onLogin: () => void;
 }
 
-export default function Login({ onLogin }: Props) {
-  const [loading, setLoading] = useState(false);
+interface LoginValues {
+  email: string;
+  password: string;
+}
 
-  const onFinish = async (values: { email: string; password: string }) => {
+interface ErrorResponse {
+  message?: string;
+}
+
+export default function Login({ onLogin }: Props) {
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const onFinish = async (values: LoginValues) => {
     setLoading(true);
+
     try {
-      const res = await api.post('/auth/login', values);
-      console.log('LOGIN RESPONSE:', res.data);
-      localStorage.setItem('token', res.data.access_token);
-      message.success('Login successful');
+      const res = await api.post("/auth/login", values);
+
+      console.log("LOGIN RESPONSE:", res.data);
+
+      // Store token
+      localStorage.setItem("token", res.data.access_token);
+
+      message.success("Login successful");
+
+      // Trigger parent login handler
       onLogin();
-    } catch (err: any) {
-      console.log('LOGIN ERROR:', err.response?.data);
-      message.error(
-        err.response?.data?.message || 'Invalid email or password'
-      );
+    } catch (err: unknown) {
+      let errorMessage = "Invalid email or password";
+
+      if (err instanceof AxiosError) {
+        const data = err.response?.data as ErrorResponse;
+
+        console.log("LOGIN ERROR:", data);
+
+        if (data?.message) {
+          errorMessage = data.message;
+        }
+      }
+
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -34,9 +60,11 @@ export default function Login({ onLogin }: Props) {
         <div className="flex justify-center mb-6">
           <img src="/icon.jpeg" alt="GeoTech" className="w-16 h-16" />
         </div>
+
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           GeoTech
         </h2>
+
         <Form
           name="login"
           onFinish={onFinish}
@@ -47,8 +75,14 @@ export default function Login({ onLogin }: Props) {
             label="Email"
             name="email"
             rules={[
-              { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' },
+              {
+                required: true,
+                message: "Please input your email!",
+              },
+              {
+                type: "email",
+                message: "Please enter a valid email!",
+              },
             ]}
           >
             <Input
@@ -61,7 +95,12 @@ export default function Login({ onLogin }: Props) {
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            rules={[
+              {
+                required: true,
+                message: "Please input your password!",
+              },
+            ]}
           >
             <Input.Password
               prefix={<LockOutlined className="text-gray-400" />}
@@ -83,6 +122,7 @@ export default function Login({ onLogin }: Props) {
             </Button>
           </Form.Item>
         </Form>
+
         <p className="text-center text-gray-400 text-sm mt-4">
           &copy; {new Date().getFullYear()} GeoTech Soil Analysis
         </p>
