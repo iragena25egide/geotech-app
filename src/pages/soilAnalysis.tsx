@@ -326,10 +326,6 @@ export default function SoilAnalysis() {
     },
   ];
 
-  /* ===============================
-     LOGOUT
-  ============================== */
-
   const logout = () => {
     localStorage.removeItem("token");
     navigate("/login");
