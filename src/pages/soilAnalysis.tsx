@@ -289,10 +289,6 @@ export default function SoilAnalysis() {
     }
   };
 
-  /* ===============================
-     TABLE
-  ============================== */
-
   const columns = [
     { title: "LL", dataIndex: "ll" },
     { title: "PL", dataIndex: "pl" },
