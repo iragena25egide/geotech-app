@@ -55,10 +55,6 @@ interface SoilSample {
   projectId: number;
 }
 
-/* ===============================
-   USCS CLASSIFICATION FUNCTION
-================================ */
-
 function classifyUSCS(
   ll: number,
   pl: number,
