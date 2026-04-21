@@ -331,10 +331,6 @@ export default function SoilAnalysis() {
     navigate("/login");
   };
 
-  /* ===============================
-     UI
-  ============================== */
-
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider theme="dark">
