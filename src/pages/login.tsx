@@ -28,7 +28,6 @@ export default function Login({ onLogin }: Props) {
 
       console.log("LOGIN RESPONSE:", res.data);
 
-      // Store token
       localStorage.setItem("token", res.data.access_token);
 
       message.success("Login successful");
