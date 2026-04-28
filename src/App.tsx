@@ -1,18 +1,18 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import Login from './pages/login';
-import Dashboard from './pages/dashboard';
-import SoilAnalysis from './pages/soilAnalysis';
-import Report from './pages/report';
-import ProtectedRoute from './components/ProtectedRoute';
-import { ConfigProvider } from 'antd';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Login from "./pages/login";
+import Dashboard from "./pages/dashboard";
+import SoilAnalysis from "./pages/soilAnalysis";
+import Report from "./pages/report";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { ConfigProvider } from "antd";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
     }
@@ -25,7 +25,7 @@ function App() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#1890ff',
+          colorPrimary: "#1890ff",
         },
       }}
     >
@@ -34,7 +34,11 @@ function App() {
           <Route
             path="/login"
             element={
-              isAuthenticated ? <Navigate to="/" /> : <Login onLogin={() => setIsAuthenticated(true)} />
+              isAuthenticated ? (
+                <Navigate to="/" />
+              ) : (
+                <Login onLogin={() => setIsAuthenticated(true)} />
+              )
             }
           />
           <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
