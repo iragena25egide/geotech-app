@@ -253,7 +253,6 @@ export default function Report() {
             {samples.length === 0 && !loading && (
               <div style={{ textAlign: "center", padding: 40 }}>
                 No soil samples found. Please add a sample from the Soil
-                Analysis page.
               </div>
             )}
           </Card>
