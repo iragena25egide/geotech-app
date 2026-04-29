@@ -53,7 +53,7 @@ export default function Dashboard() {
     try {
       const res = await api.get("/projects");
       setProjects(res.data);
-    } catch (err: unknown) {
+    } catch (err: any) {
       message.error("Failed to load projects");
     } finally {
       setLoading(false);
@@ -70,7 +70,7 @@ export default function Dashboard() {
       form.resetFields();
 
       loadProjects();
-    } catch (err: unknown) {
+    } catch (err: any) {
       message.error("Failed to create project");
     }
   };
