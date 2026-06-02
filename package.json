@@ -1,21 +1,78 @@
 {
   "name": "geotech-desktop",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "GeoTech Soil Analysis Desktop Application",
+  "author": "GeoTech",
   "main": "electron/main.js",
-  "type": "module",
   "scripts": {
     "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+
     "electron": "electron .",
-    "desktop": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron .\"",
-    "build": "vite build"
+
+    "desktop": "concurrently --kill-others \"npm run dev\" \"wait-on http://localhost:5173 && electron .\"",
+
+    "dist:mac": "npm run build && electron-builder --mac --x64 --arm64",
+
+    "dist:win": "npm run build && electron-builder --win --x64",
+
+    "dist:all": "npm run build && electron-builder --mac --win --x64"
+  },
+  "build": {
+    "appId": "com.geotech.desktop",
+    "productName": "GeoTech",
+    "copyright": "Copyright © 2025 GeoTech",
+    "directories": {
+      "output": "release",
+      "buildResources": "public"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "public/icon.png",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ]
+    },
+    "win": {
+      "icon": "public/icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "GeoTech"
+    },
+    "dmg": {
+      "title": "GeoTech Installer",
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    }
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.1",
     "@heroicons/react": "^2.2.0",
     "antd": "^6.3.6",
     "axios": "^1.14.0",
-    "electron": "^28.3.3",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "react": "^19.2.4",
@@ -30,6 +87,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^9.2.1",
+    "electron": "^28.3.3",
     "electron-builder": "^26.8.1",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
