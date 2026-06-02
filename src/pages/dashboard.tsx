@@ -24,7 +24,6 @@ import {
   LogoutOutlined,
   PlusOutlined,
   ProjectOutlined,
-  RightOutlined,
   DatabaseOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -87,7 +86,8 @@ export default function Dashboard() {
 
       setGlobalStats({
         totalProjects: projList.length,
-        activeProjects: projList.filter((p: Project) => p.status === "active").length,
+        activeProjects: projList.filter((p: Project) => p.status === "active")
+          .length,
         totalSamplesCount: samplesCount || projList.length * 3, // fallback estimation if empty
       });
     } catch (err: any) {
@@ -124,8 +124,12 @@ export default function Dashboard() {
       key: "details",
       render: (_: unknown, record: Project) => (
         <div>
-          <div style={{ fontWeight: 600, fontSize: 15, color: "#16213e" }}>{record.name}</div>
-          <div style={{ fontSize: 12, color: "#8c8c8c", marginTop: 2 }}>{record.description || "No description provided"}</div>
+          <div style={{ fontWeight: 600, fontSize: 15, color: "#16213e" }}>
+            {record.name}
+          </div>
+          <div style={{ fontSize: 12, color: "#8c8c8c", marginTop: 2 }}>
+            {record.description || "No description provided"}
+          </div>
         </div>
       ),
     },
@@ -135,7 +139,9 @@ export default function Dashboard() {
       render: (_: unknown, record: Project) => (
         <div style={{ fontSize: 13 }}>
           <div>📍 {record.location || "N/A"}</div>
-          <div style={{ color: "#555", fontSize: 12, marginTop: 2 }}>👤 Client: {record.client || "N/A"}</div>
+          <div style={{ color: "#555", fontSize: 12, marginTop: 2 }}>
+            👤 Client: {record.client || "N/A"}
+          </div>
         </div>
       ),
     },
@@ -144,7 +150,14 @@ export default function Dashboard() {
       dataIndex: "status",
       key: "status",
       render: (status: string) => (
-        <Tag color={status === "active" ? "processing" : "success"} style={{ textTransform: "capitalize", borderRadius: 4, padding: "2px 8px" }}>
+        <Tag
+          color={status === "active" ? "processing" : "success"}
+          style={{
+            textTransform: "capitalize",
+            borderRadius: 4,
+            padding: "2px 8px",
+          }}
+        >
           {status}
         </Tag>
       ),
@@ -180,11 +193,25 @@ export default function Dashboard() {
   return (
     <Layout style={{ minHeight: "100vh", background: "#f0f2f5" }}>
       <Sider theme="dark" width={220}>
-        <div style={{ padding: "24px 16px", color: "white", fontSize: 20, fontWeight: 800, borderBottom: "1px solid rgba(255,255,255,0.1)", letterSpacing: 0.5 }}>
+        <div
+          style={{
+            padding: "24px 16px",
+            color: "white",
+            fontSize: 20,
+            fontWeight: 800,
+            borderBottom: "1px solid rgba(255,255,255,0.1)",
+            letterSpacing: 0.5,
+          }}
+        >
           🌍 GEOTECH
         </div>
 
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]} style={{ marginTop: 16 }}>
+        <Menu
+          theme="dark"
+          mode="inline"
+          defaultSelectedKeys={["1"]}
+          style={{ marginTop: 16 }}
+        >
           <Menu.Item key="1" icon={<DashboardOutlined />}>
             Dashboard
           </Menu.Item>
@@ -196,10 +223,39 @@ export default function Dashboard() {
       </Sider>
 
       <Layout>
-        <Header style={{ background: "#ffffff", padding: "0 24px", display: "flex", alignItems: "center", borderBottom: "1px solid #f0f0f0", height: 64 }}>
-          <h2 style={{ margin: 0, fontWeight: 700, color: "#111", fontSize: 20 }}>Geotechnical Projects Portal</h2>
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-            <Tag color="blue" icon={<UserOutlined />} style={{ padding: "4px 12px", fontSize: 12, borderRadius: 6, fontWeight: 600 }}>
+        <Header
+          style={{
+            background: "#ffffff",
+            padding: "0 24px",
+            display: "flex",
+            alignItems: "center",
+            borderBottom: "1px solid #f0f0f0",
+            height: 64,
+          }}
+        >
+          <h2
+            style={{ margin: 0, fontWeight: 700, color: "#111", fontSize: 20 }}
+          >
+            Geotechnical Projects Portal
+          </h2>
+          <div
+            style={{
+              marginLeft: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <Tag
+              color="blue"
+              icon={<UserOutlined />}
+              style={{
+                padding: "4px 12px",
+                fontSize: 12,
+                borderRadius: 6,
+                fontWeight: 600,
+              }}
+            >
               Admin Specialist
             </Tag>
           </div>
@@ -209,34 +265,108 @@ export default function Dashboard() {
           {/* PREMIUM STATS BANNER */}
           <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
             <Col xs={24} sm={8}>
-              <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.04)", background: "linear-gradient(135deg, #0f3460, #16213e)", color: "#ffffff" }}>
+              <Card
+                bordered={false}
+                style={{
+                  borderRadius: 12,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
+                  background: "linear-gradient(135deg, #0f3460, #16213e)",
+                  color: "#ffffff",
+                }}
+              >
                 <Statistic
-                  title={<span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 500, fontSize: 13 }}>TOTAL ACTIVE PROJECTS</span>}
+                  title={
+                    <span
+                      style={{
+                        color: "rgba(255,255,255,0.7)",
+                        fontWeight: 500,
+                        fontSize: 13,
+                      }}
+                    >
+                      TOTAL ACTIVE PROJECTS
+                    </span>
+                  }
                   value={globalStats.activeProjects}
-                  prefix={<ProjectOutlined style={{ color: "#36cfc9", marginRight: 8 }} />}
-                  valueStyle={{ color: "#ffffff", fontSize: 28, fontWeight: 700 }}
+                  prefix={
+                    <ProjectOutlined
+                      style={{ color: "#36cfc9", marginRight: 8 }}
+                    />
+                  }
+                  valueStyle={{
+                    color: "#ffffff",
+                    fontSize: 28,
+                    fontWeight: 700,
+                  }}
                 />
               </Card>
             </Col>
 
             <Col xs={24} sm={8}>
-              <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}>
+              <Card
+                bordered={false}
+                style={{
+                  borderRadius: 12,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
+                }}
+              >
                 <Statistic
-                  title={<span style={{ color: "#8c8c8c", fontWeight: 500, fontSize: 13 }}>TOTAL CLASSIFIED SAMPLES</span>}
+                  title={
+                    <span
+                      style={{
+                        color: "#8c8c8c",
+                        fontWeight: 500,
+                        fontSize: 13,
+                      }}
+                    >
+                      TOTAL CLASSIFIED SAMPLES
+                    </span>
+                  }
                   value={globalStats.totalSamplesCount}
-                  prefix={<DatabaseOutlined style={{ color: "#1890ff", marginRight: 8 }} />}
-                  valueStyle={{ color: "#0f3460", fontSize: 28, fontWeight: 700 }}
+                  prefix={
+                    <DatabaseOutlined
+                      style={{ color: "#1890ff", marginRight: 8 }}
+                    />
+                  }
+                  valueStyle={{
+                    color: "#0f3460",
+                    fontSize: 28,
+                    fontWeight: 700,
+                  }}
                 />
               </Card>
             </Col>
 
             <Col xs={24} sm={8}>
-              <Card bordered={false} style={{ borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}>
+              <Card
+                bordered={false}
+                style={{
+                  borderRadius: 12,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
+                }}
+              >
                 <Statistic
-                  title={<span style={{ color: "#8c8c8c", fontWeight: 500, fontSize: 13 }}>ARCHIVED REPORTS</span>}
+                  title={
+                    <span
+                      style={{
+                        color: "#8c8c8c",
+                        fontWeight: 500,
+                        fontSize: 13,
+                      }}
+                    >
+                      ARCHIVED REPORTS
+                    </span>
+                  }
                   value={globalStats.totalProjects * 2}
-                  prefix={<FileTextOutlined style={{ color: "#e94560", marginRight: 8 }} />}
-                  valueStyle={{ color: "#0f3460", fontSize: 28, fontWeight: 700 }}
+                  prefix={
+                    <FileTextOutlined
+                      style={{ color: "#e94560", marginRight: 8 }}
+                    />
+                  }
+                  valueStyle={{
+                    color: "#0f3460",
+                    fontSize: 28,
+                    fontWeight: 700,
+                  }}
                 />
               </Card>
             </Col>
@@ -245,14 +375,27 @@ export default function Dashboard() {
           {/* MAIN CARD WORKSPACE */}
           <Card
             bordered={false}
-            style={{ borderRadius: 12, boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}
-            title={<span style={{ fontWeight: 700, fontSize: 16 }}>Projects Registry</span>}
+            style={{
+              borderRadius: 12,
+              boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+            }}
+            title={
+              <span style={{ fontWeight: 700, fontSize: 16 }}>
+                Projects Registry
+              </span>
+            }
             extra={
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={() => setModalVisible(true)}
-                style={{ borderRadius: 8, height: 38, background: "#0f3460", border: "none", fontWeight: 600 }}
+                style={{
+                  borderRadius: 8,
+                  height: 38,
+                  background: "#0f3460",
+                  border: "none",
+                  fontWeight: 600,
+                }}
               >
                 Add New Project
               </Button>
@@ -272,7 +415,11 @@ export default function Dashboard() {
 
       {/* CREATE NEW PROJECT MODAL */}
       <Modal
-        title={<span style={{ fontWeight: 700, fontSize: 18 }}>Register New Project</span>}
+        title={
+          <span style={{ fontWeight: 700, fontSize: 18 }}>
+            Register New Project
+          </span>
+        }
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
@@ -280,39 +427,101 @@ export default function Dashboard() {
         style={{ borderRadius: 12 }}
       >
         <Divider style={{ margin: "12px 0 24px" }} />
-        
-        <Form form={form} layout="vertical" onFinish={handleCreateProject} requiredMark={false}>
+
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleCreateProject}
+          requiredMark={false}
+        >
           <Form.Item
             name="name"
             label={<span style={{ fontWeight: 600 }}>Project Name</span>}
-            rules={[{ required: true, message: "Please enter a descriptive project name" }]}
+            rules={[
+              {
+                required: true,
+                message: "Please enter a descriptive project name",
+              },
+            ]}
           >
-            <Input placeholder="e.g. Kigali Infill Highway Foundation Analysis" size="large" style={{ borderRadius: 6 }} />
+            <Input
+              placeholder="e.g. Kigali Infill Highway Foundation Analysis"
+              size="large"
+              style={{ borderRadius: 6 }}
+            />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="location" label={<span style={{ fontWeight: 600 }}>Location</span>}>
-                <Input placeholder="e.g. Kigali, Rwanda" size="large" style={{ borderRadius: 6 }} />
+              <Form.Item
+                name="location"
+                label={<span style={{ fontWeight: 600 }}>Location</span>}
+              >
+                <Input
+                  placeholder="e.g. Kigali, Rwanda"
+                  size="large"
+                  style={{ borderRadius: 6 }}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="client" label={<span style={{ fontWeight: 600 }}>Client Name</span>}>
-                <Input placeholder="e.g. RTDA Ministry" size="large" style={{ borderRadius: 6 }} />
+              <Form.Item
+                name="client"
+                label={<span style={{ fontWeight: 600 }}>Client Name</span>}
+              >
+                <Input
+                  placeholder="e.g. RTDA Ministry"
+                  size="large"
+                  style={{ borderRadius: 6 }}
+                />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item name="engineer" label={<span style={{ fontWeight: 600 }}>Assigned Geotechnical Engineer</span>}>
-            <Input placeholder="e.g. Dr. Jean Laurent" size="large" style={{ borderRadius: 6 }} />
+          <Form.Item
+            name="engineer"
+            label={
+              <span style={{ fontWeight: 600 }}>
+                Assigned Geotechnical Engineer
+              </span>
+            }
+          >
+            <Input
+              placeholder="e.g. Dr. Jean Laurent"
+              size="large"
+              style={{ borderRadius: 6 }}
+            />
           </Form.Item>
 
-          <Form.Item name="description" label={<span style={{ fontWeight: 600 }}>Project Description & Scope</span>}>
-            <Input.TextArea rows={3} placeholder="Provide details regarding soil horizons, target depths, and structural structures..." style={{ borderRadius: 6 }} />
+          <Form.Item
+            name="description"
+            label={
+              <span style={{ fontWeight: 600 }}>
+                Project Description & Scope
+              </span>
+            }
+          >
+            <Input.TextArea
+              rows={3}
+              placeholder="Provide details regarding soil horizons, target depths, and structural structures..."
+              style={{ borderRadius: 6 }}
+            />
           </Form.Item>
 
           <Form.Item style={{ marginTop: 24, marginBottom: 8 }}>
-            <Button type="primary" htmlType="submit" block size="large" style={{ background: "#0f3460", border: "none", borderRadius: 8, height: 45, fontWeight: 600 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              size="large"
+              style={{
+                background: "#0f3460",
+                border: "none",
+                borderRadius: 8,
+                height: 45,
+                fontWeight: 600,
+              }}
+            >
               Create Project Profile
             </Button>
           </Form.Item>
