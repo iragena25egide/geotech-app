@@ -173,7 +173,6 @@ export default function Report() {
       setCreateModalVisible(false);
       form.resetFields();
 
-      // Reload reports table
       const res = await api.get(`/reports?projectId=${projectId}`);
       setReports(res.data);
     } catch (err) {
@@ -184,7 +183,6 @@ export default function Report() {
   };
 
   const handleDownloadPdf = (reportId: number) => {
-    // Open standard download link from backend directly
     const downloadUrl = `http://localhost:3000/reports/${reportId}/download`;
     window.open(downloadUrl, "_blank");
     message.info("Initiating server-side Geotechnical PDF download...");
@@ -205,7 +203,6 @@ export default function Report() {
       setApproveModalVisible(false);
       approvalForm.resetFields();
 
-      // Reload reports
       const res = await api.get(`/reports?projectId=${projectId}`);
       setReports(res.data);
     } catch {
