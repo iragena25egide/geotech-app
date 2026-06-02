@@ -87,7 +87,7 @@ export default function Dashboard() {
         totalProjects: projList.length,
         activeProjects: projList.filter((p: Project) => p.status === "active")
           .length,
-        totalSamplesCount: samplesCount || projList.length * 3, // fallback estimation if empty
+        totalSamplesCount: samplesCount || projList.length * 3,
       });
     } catch (err: any) {
       message.error("Failed to load projects");
