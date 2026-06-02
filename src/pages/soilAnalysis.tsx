@@ -579,8 +579,6 @@ export default function SoilAnalysis() {
                           Plasticity Index — PI (%)
                         </text>
 
-                        {/* A-Line boundary (PI = 0.73 * (LL - 20)) */}
-                        {/* Low limit boundary (LL=20, PI=0) to (LL=100, PI=58.4) */}
                         <line
                           x1={mapX(20)}
                           y1={mapY(0)}
