@@ -75,7 +75,6 @@ export default function Dashboard() {
       const projList = res.data;
       setProjects(projList);
 
-      // Try fetching all soil samples to compute total samples count
       let samplesCount = 0;
       try {
         const samplesRes = await api.get("/soil-samples");
