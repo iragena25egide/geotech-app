@@ -622,7 +622,6 @@ export default function SoilAnalysis() {
                           U-Line
                         </text>
 
-                        {/* Vertical division line at LL = 50 */}
                         <line
                           x1={mapX(50)}
                           y1={mapY(0)}
@@ -642,7 +641,6 @@ export default function SoilAnalysis() {
                           LL = 50 Division
                         </text>
 
-                        {/* PLOTTED LAB SOIL POINTS */}
                         {samples.map((s, idx) => {
                           const cx = mapX(Number(s.ll));
                           const cy = mapY(Number(s.pi));
