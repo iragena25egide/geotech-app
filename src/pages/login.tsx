@@ -8,7 +8,6 @@ interface Props {
   onLogin: () => void;
 }
 
-// Backend AuthService expects { username, password }
 interface LoginValues {
   username: string;
   password: string;
@@ -58,7 +57,8 @@ export default function Login({ onLogin }: Props) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+        background:
+          "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
       }}
     >
       <Card
@@ -86,7 +86,14 @@ export default function Login({ onLogin }: Props) {
           >
             🌍
           </div>
-          <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "#1a1a2e" }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 24,
+              fontWeight: 700,
+              color: "#1a1a2e",
+            }}
+          >
             GeoTech
           </h2>
           <p style={{ margin: "4px 0 0", color: "#8c8c8c", fontSize: 14 }}>
@@ -145,7 +152,15 @@ export default function Login({ onLogin }: Props) {
           </Form.Item>
         </Form>
 
-        <p style={{ textAlign: "center", color: "#bfbfbf", fontSize: 12, marginTop: 16, marginBottom: 0 }}>
+        <p
+          style={{
+            textAlign: "center",
+            color: "#bfbfbf",
+            fontSize: 12,
+            marginTop: 16,
+            marginBottom: 0,
+          }}
+        >
           © {new Date().getFullYear()} GeoTech Soil Analysis
         </p>
       </Card>
