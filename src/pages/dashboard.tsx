@@ -411,7 +411,6 @@ export default function Dashboard() {
         </Content>
       </Layout>
 
-      {/* CREATE NEW PROJECT MODAL */}
       <Modal
         title={
           <span style={{ fontWeight: 700, fontSize: 18 }}>
