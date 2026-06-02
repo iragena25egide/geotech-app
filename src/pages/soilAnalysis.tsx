@@ -601,7 +601,6 @@ export default function SoilAnalysis() {
                           A-Line (PI = 0.73 * [LL - 20])
                         </text>
 
-                        {/* U-Line boundary (Upper Limit: PI = 0.9 * (LL - 8)) */}
                         <line
                           x1={mapX(8)}
                           y1={mapY(0)}
