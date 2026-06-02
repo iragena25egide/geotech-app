@@ -92,12 +92,10 @@ export default function Report() {
   const [loading, setLoading] = useState(false);
   const [projectName, setProjectName] = useState("");
 
-  // Report Modal state
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [form] = Form.useForm();
 
-  // Review / Approval Modal state
   const [approveModalVisible, setApproveModalVisible] = useState(false);
   const [selectedReportForApproval, setSelectedReportForApproval] =
     useState<ServerReport | null>(null);
