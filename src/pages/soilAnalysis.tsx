@@ -816,7 +816,6 @@ export default function SoilAnalysis() {
               </Row>
             </Tabs.TabPane>
 
-            {/* PREMIUM ADD-ON: SOIL STABILIZATION WIDGET */}
             <Tabs.TabPane
               tab={
                 <span>
