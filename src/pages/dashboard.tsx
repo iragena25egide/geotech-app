@@ -371,7 +371,6 @@ export default function Dashboard() {
             </Col>
           </Row>
 
-          {/* MAIN CARD WORKSPACE */}
           <Card
             bordered={false}
             style={{
