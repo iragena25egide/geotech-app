@@ -484,7 +484,6 @@ export default function Report() {
         </Content>
       </Layout>
 
-      {/* COMPILE NEW PDF REPORT MODAL */}
       <Modal
         title={
           <span style={{ fontWeight: 700, fontSize: 18 }}>
