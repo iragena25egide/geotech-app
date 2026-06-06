@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
@@ -25,11 +25,13 @@ function App() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#1890ff",
+          colorPrimary: "#8b5cf6",
+          fontFamily: "'Inter', sans-serif",
+          borderRadius: 8,
         },
       }}
     >
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route
             path="/login"
@@ -47,7 +49,7 @@ function App() {
             <Route path="/report/:projectId" element={<Report />} />
           </Route>
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </ConfigProvider>
   );
 }
