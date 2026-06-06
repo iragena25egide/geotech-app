@@ -337,7 +337,7 @@ export default function SoilAnalysis() {
 
   const logout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    window.location.reload();
   };
 
   return (
