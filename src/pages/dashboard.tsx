@@ -16,6 +16,8 @@ import {
   Statistic,
   Tag,
   Divider,
+  Tabs,
+  Dropdown,
 } from "antd";
 import {
   DashboardOutlined,
@@ -26,6 +28,13 @@ import {
   ProjectOutlined,
   DatabaseOutlined,
   UserOutlined,
+  ArrowLeftOutlined,
+  ReloadOutlined,
+  DeleteOutlined,
+  UndoOutlined,
+  ExclamationCircleOutlined,
+  DeploymentUnitOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { api } from "../../services/api";
 
@@ -56,10 +65,12 @@ export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentTab, setCurrentTab] = useState("active");
   const [globalStats, setGlobalStats] = useState({
     totalProjects: 0,
     activeProjects: 0,
     totalSamplesCount: 0,
+    archivedProjects: 0,
   });
 
   const [form] = Form.useForm<ProjectFormValues>();
@@ -88,6 +99,9 @@ export default function Dashboard() {
         activeProjects: projList.filter((p: Project) => p.status === "active")
           .length,
         totalSamplesCount: samplesCount || projList.length * 3,
+        archivedProjects: projList.filter(
+          (p: Project) => p.status === "archived"
+        ).length,
       });
     } catch (err: any) {
       message.error("Failed to load projects");
@@ -114,7 +128,66 @@ export default function Dashboard() {
 
   const logout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    window.location.reload();
+  };
+
+  const handleArchive = (id: number) => {
+    Modal.confirm({
+      title: "Are you sure you want to archive this project?",
+      icon: <ExclamationCircleOutlined />,
+      content: "This project will be moved to the archived section.",
+      okText: "Yes, Archive",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          await api.patch(`/projects/${id}`, { status: "archived" });
+          message.success("Project archived successfully");
+          loadProjects();
+        } catch (err) {
+          message.error("Failed to archive project");
+        }
+      },
+    });
+  };
+
+  const handleRestore = (id: number) => {
+    Modal.confirm({
+      title: "Restore Project?",
+      icon: <ExclamationCircleOutlined />,
+      content: "This will move the project back to the active registry.",
+      okText: "Yes, Restore",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          await api.patch(`/projects/${id}`, { status: "active" });
+          message.success("Project restored successfully");
+          loadProjects();
+        } catch (err) {
+          message.error("Failed to restore project");
+        }
+      },
+    });
+  };
+
+  const handlePermanentDelete = (id: number) => {
+    Modal.confirm({
+      title: "Permanently Delete Project?",
+      icon: <ExclamationCircleOutlined />,
+      content: "This action cannot be undone. All data will be lost.",
+      okText: "Yes, Delete Forever",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          await api.delete(`/projects/${id}`);
+          message.success("Project permanently deleted");
+          loadProjects();
+        } catch (err) {
+          message.error("Failed to delete project");
+        }
+      },
+    });
   };
 
   const columns = [
@@ -166,56 +239,119 @@ export default function Dashboard() {
       key: "actions",
       render: (_: unknown, record: Project) => (
         <Space size="middle">
-          <Button
-            type="primary"
-            ghost
-            icon={<ExperimentOutlined />}
-            onClick={() => navigate(`/analysis/${record.id}`)}
-            style={{ borderRadius: 6 }}
-          >
-            Soil Analysis
-          </Button>
-
-          <Button
-            type="dashed"
-            icon={<FileTextOutlined />}
-            onClick={() => navigate(`/report/${record.id}`)}
-            style={{ borderRadius: 6 }}
-          >
-            View Reports
-          </Button>
+          {currentTab === "active" ? (
+            <>
+              <Button
+                type="primary"
+                ghost
+                icon={<ExperimentOutlined />}
+                onClick={() => navigate(`/analysis/${record.id}`)}
+                style={{ borderRadius: 6 }}
+              >
+                Soil Analysis
+              </Button>
+              <Button
+                type="dashed"
+                icon={<FileTextOutlined />}
+                onClick={() => navigate(`/report/${record.id}`)}
+                style={{ borderRadius: 6 }}
+              >
+                View Reports
+              </Button>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => handleArchive(record.id)}
+                style={{ borderRadius: 6 }}
+              >
+                Archive
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                type="primary"
+                ghost
+                icon={<UndoOutlined />}
+                onClick={() => handleRestore(record.id)}
+                style={{ borderRadius: 6 }}
+              >
+                Restore
+              </Button>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => handlePermanentDelete(record.id)}
+                style={{ borderRadius: 6 }}
+              >
+                Delete Forever
+              </Button>
+            </>
+          )}
         </Space>
       ),
     },
   ];
 
   return (
-    <Layout style={{ minHeight: "100vh", background: "#f0f2f5" }}>
-      <Sider theme="dark" width={220}>
+    <Layout style={{ minHeight: "100vh", background: "#f8f9fa" }}>
+      <Sider
+        theme="light"
+        width={240}
+        breakpoint="lg"
+        collapsedWidth="0"
+        style={{ borderRight: "1px solid #f0f0f0" }}
+      >
         <div
           style={{
             padding: "24px 16px",
-            color: "white",
-            fontSize: 20,
+            color: "#8b5cf6",
+            fontSize: 22,
             fontWeight: 800,
-            borderBottom: "1px solid rgba(255,255,255,0.1)",
+            borderBottom: "1px solid #f0f0f0",
             letterSpacing: 0.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
           }}
         >
-          🌍 GEOTECH
+          <div
+            style={{
+              background: "rgba(139, 92, 246, 0.1)",
+              padding: 6,
+              borderRadius: 8,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <DeploymentUnitOutlined />
+          </div>{" "}
+          GEOTECH
         </div>
 
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
-          defaultSelectedKeys={["1"]}
+          selectedKeys={[currentTab === "active" ? "1" : "2"]}
           style={{ marginTop: 16 }}
         >
-          <Menu.Item key="1" icon={<DashboardOutlined />}>
+          <Menu.Item
+            key="1"
+            icon={<DashboardOutlined />}
+            onClick={() => setCurrentTab("active")}
+          >
             Dashboard
           </Menu.Item>
 
-          <Menu.Item key="2" icon={<LogoutOutlined />} onClick={logout}>
+          <Menu.Item
+            key="2"
+            icon={<DatabaseOutlined />}
+            onClick={() => setCurrentTab("archived")}
+          >
+            Archives
+          </Menu.Item>
+
+          <Menu.Item key="3" icon={<LogoutOutlined />} onClick={logout}>
             Logout
           </Menu.Item>
         </Menu>
@@ -232,11 +368,6 @@ export default function Dashboard() {
             height: 64,
           }}
         >
-          <h2
-            style={{ margin: 0, fontWeight: 700, color: "#111", fontSize: 20 }}
-          >
-            Geotechnical Projects Portal
-          </h2>
           <div
             style={{
               marginLeft: "auto",
@@ -245,18 +376,52 @@ export default function Dashboard() {
               gap: 8,
             }}
           >
-            <Tag
-              color="blue"
-              icon={<UserOutlined />}
-              style={{
-                padding: "4px 12px",
-                fontSize: 12,
-                borderRadius: 6,
-                fontWeight: 600,
-              }}
+            <Button
+              icon={<ArrowLeftOutlined />}
+              onClick={() => navigate(-1)}
+              title="Go Back"
             >
-              Admin Specialist
-            </Tag>
+              Back
+            </Button>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                loadProjects();
+                message.success("Projects refreshed successfully");
+              }}
+              title="Refresh Projects"
+            >
+              Refresh
+            </Button>
+            <Dropdown
+              menu={{
+                items: [
+                  { key: '1', icon: <UserOutlined />, label: 'Profile' },
+                  { key: '2', icon: <SettingOutlined />, label: 'Settings' },
+                  { type: 'divider' },
+                  { key: '3', icon: <LogoutOutlined />, label: 'Logout', onClick: logout },
+                ]
+              }}
+              trigger={['click']}
+            >
+              <div
+                style={{
+                  padding: "6px 14px",
+                  fontSize: 14,
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  backgroundColor: "#e6f4ff",
+                  color: "#1677ff",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                <UserOutlined />
+                Admin Specialist
+              </div>
+            </Dropdown>
           </div>
         </Header>
 
@@ -269,15 +434,14 @@ export default function Dashboard() {
                 style={{
                   borderRadius: 12,
                   boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
-                  background: "linear-gradient(135deg, #0f3460, #16213e)",
-                  color: "#ffffff",
+                  background: "#ffffff",
                 }}
               >
                 <Statistic
                   title={
                     <span
                       style={{
-                        color: "rgba(255,255,255,0.7)",
+                        color: "#8c8c8c",
                         fontWeight: 500,
                         fontSize: 13,
                       }}
@@ -288,11 +452,11 @@ export default function Dashboard() {
                   value={globalStats.activeProjects}
                   prefix={
                     <ProjectOutlined
-                      style={{ color: "#36cfc9", marginRight: 8 }}
+                      style={{ color: "#8b5cf6", marginRight: 8 }}
                     />
                   }
                   valueStyle={{
-                    color: "#ffffff",
+                    color: "#111827",
                     fontSize: 28,
                     fontWeight: 700,
                   }}
@@ -323,11 +487,11 @@ export default function Dashboard() {
                   value={globalStats.totalSamplesCount}
                   prefix={
                     <DatabaseOutlined
-                      style={{ color: "#1890ff", marginRight: 8 }}
+                      style={{ color: "#8b5cf6", marginRight: 8 }}
                     />
                   }
                   valueStyle={{
-                    color: "#0f3460",
+                    color: "#111827",
                     fontSize: 28,
                     fontWeight: 700,
                   }}
@@ -352,17 +516,17 @@ export default function Dashboard() {
                         fontSize: 13,
                       }}
                     >
-                      ARCHIVED REPORTS
+                      ARCHIVED PROJECTS
                     </span>
                   }
-                  value={globalStats.totalProjects * 2}
+                  value={globalStats.archivedProjects}
                   prefix={
                     <FileTextOutlined
-                      style={{ color: "#e94560", marginRight: 8 }}
+                      style={{ color: "#8b5cf6", marginRight: 8 }}
                     />
                   }
                   valueStyle={{
-                    color: "#0f3460",
+                    color: "#111827",
                     fontSize: 28,
                     fontWeight: 700,
                   }}
@@ -379,29 +543,37 @@ export default function Dashboard() {
             }}
             title={
               <span style={{ fontWeight: 700, fontSize: 16 }}>
-                Projects Registry
+                {currentTab === "active"
+                  ? "Projects Registry"
+                  : "Archived Projects"}
               </span>
             }
             extra={
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => setModalVisible(true)}
-                style={{
-                  borderRadius: 8,
-                  height: 38,
-                  background: "#0f3460",
-                  border: "none",
-                  fontWeight: 600,
-                }}
-              >
-                Add New Project
-              </Button>
+              currentTab === "active" && (
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => setModalVisible(true)}
+                  style={{
+                    borderRadius: 8,
+                    height: 38,
+                    background: "#8b5cf6",
+                    border: "none",
+                    fontWeight: 600,
+                  }}
+                >
+                  Add New Project
+                </Button>
+              )
             }
           >
             <Table
               columns={columns}
-              dataSource={projects}
+              dataSource={
+                currentTab === "active"
+                  ? projects.filter((p) => p.status !== "archived")
+                  : projects.filter((p) => p.status === "archived")
+              }
               rowKey="id"
               loading={loading}
               pagination={{ pageSize: 8 }}
@@ -512,7 +684,7 @@ export default function Dashboard() {
               block
               size="large"
               style={{
-                background: "#0f3460",
+                background: "#8b5cf6",
                 border: "none",
                 borderRadius: 8,
                 height: 45,
